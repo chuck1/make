@@ -8,7 +8,7 @@ lib       := $(home)lib/
 doc       := $(home)doc/
 
 
--include $(root)transfer/make/makefile.Def.mk
+-include $(root)make/Makefile.Def.mk
 
 name      := $(patsubst %/compiler/lin64, %.a , $(subst ./, , $(subst ../, , $(shell pwd))))
 name      := $(basename $(notdir $(name)))
@@ -46,18 +46,13 @@ depend    = $(addprefix depend/, $(subst ./, , $(subst ../, , $(patsubst %.cpp, 
 
 bin       := $(lib)lin64/lib$(name).a
 
-doc_html  := $(doc)html/index.html
 
 
 
 all:
 	@clear
-	@$(MAKE) -f makefile $(bin)
-	#@$(MAKE) -f makefile $(doc_html)
+	@$(MAKE) -f Makefile $(bin)
 
-$(doc_html): $(doc)Doxyfile $(obj)
-	@echo doc
-	@doxygen $(doc)Doxyfile
 	
 obj/%.o: $(src)%.cpp
 	@$(ECHO) compiling $<...

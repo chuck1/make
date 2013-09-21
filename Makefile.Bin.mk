@@ -1,5 +1,7 @@
--include $(root)transfer/make/makefile.Def.mk
+-include $(root)make/Makefile.Def.mk
 
+# todo: error handling and more advanced detection of filenames and such.
+#       independent system for generating doxygen
 
 home := ./../../
 src  := $(home)src/
@@ -42,7 +44,7 @@ all:
 	@clear
 	@$(ECHO) $(cpp_files)
 	@$(ECHO) $(o_files)
-	@$(MAKE) -f makefile $(binary)
+	@$(MAKE) -f Makefile $(binary)
 
 clean:
 	@$(ECHO) clean
