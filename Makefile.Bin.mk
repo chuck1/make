@@ -12,6 +12,10 @@ obj  := obj/
 name      := $(patsubst %/compiler/lin64, %.a , $(subst ./, , $(subst ../, , $(shell pwd))))
 name      := $(basename $(notdir $(name)))
 
+libs      := $(shell find $(lpaths) -name *.a)
+lib_pat   := $(addsuffix .a, $(addprefix %lib, $(libraries)))
+libs_filt := $(filter $(lib_pat), $(libs))
+
 
 
 cflags     := 
@@ -34,7 +38,12 @@ lflags     += $(addprefix $(pre), ./../../../glew/lib/)
 
 cpp_files  := $(shell find $(src) -name *.cpp)
 
-o_files    := $(addprefix $(obj), $(subst src/, , $(subst ./, , $(subst ../, , $(patsubst %.cpp, %.o, $(cpp_files))))))
+
+
+o_files   = $(addprefix obj/, $(subst $(src), , $(patsubst %.cpp, %.o, $(cpp_files))))
+depend    = $(addprefix depend/, $(subst ./, , $(subst ../, , $(subst $(src), , $(patsubst %.cpp, %.depend, $(cpp_files))))))
+
+
 
 binary     := $(bin)lib64/$(name)
 
@@ -42,9 +51,19 @@ binary     := $(bin)lib64/$(name)
 
 all:
 	@clear
-	@$(ECHO) $(cpp_files)
-	@$(ECHO) $(o_files)
 	@$(MAKE) -f Makefile $(binary)
+
+debug:
+	@echo "o_files  " $(o_files)
+	@echo "depend   " $(depend)
+	@echo "libraries" $(libraries)
+	@echo "lpaths   " $(lpaths)
+	@echo "libs     " $(libs)
+	@echo "lib_pat  " $(lib_pat)
+	@echo "libs_filt" $(libs_filt)
+
+
+
 
 clean:
 	@$(ECHO) clean
@@ -53,16 +72,16 @@ clean:
 	
 fresh: clean all
 	
-$(obj)%.o: $(src)%.cpp
+$(obj)%.o: $(src)%.cpp $(libs_filt)
 	@$(ECHO) compiling $<...
 	@$(MKDIR) $(dir $@)
 	@$(CXX) $(cflags) -c $< -o $@ $(lflags)
 
-$(binary): $(o_files)
+$(binary): $(o_files) 
 	@$(ECHO) building $@...
 	@$(MKDIR) $(dir $(binary))
 	@$(CXX) $(cflags) -o $@ $(o_files) $(lflags)
 	@$(ECHO) building $@ complete!
 
 
-	
+-include $(depend)	

@@ -27,6 +27,11 @@ lflags    += $(addprefix -L, $(lpaths))
 lflags    += -Wl,--start-group $(addprefix -l, $(libraries)) -Wl,--end-group
 
 
+libs      := $(shell find $(lpaths) -name *.a)
+lib_pat   := $(addsuffix .a, $(addprefix %lib, $(libraries)))
+libs_filt := $(filter $(lib_pat), $(libs))
+
+
 all_cppfiles := $(shell find $(src) -name *.cpp)
 
 ign_paths :=
@@ -41,7 +46,7 @@ cppfiles  := $(filter-out $(ign_files), $(all_cppfiles))
 
 
 obj       = $(addprefix obj/, $(subst $(src), , $(patsubst %.cpp, %.o, $(cppfiles))))
-depend    = $(addprefix depend/, $(subst ./, , $(subst ../, , $(patsubst %.cpp, %.depend, $(cppfiles)))))
+depend    = $(addprefix depend/, $(subst ./, , $(subst ../, , $(subst $(src), , $(patsubst %.cpp, %.depend, $(cppfiles))))))
 
 
 bin       := $(lib)lin64/lib$(name).a
@@ -53,8 +58,17 @@ all:
 	@clear
 	@$(MAKE) -f Makefile $(bin)
 
+
+debug:
+	@echo "depend   " $(depend)
+	@echo "libraries" $(libraries)
+	@echo "lpaths   " $(lpaths)
+	@echo "libs     " $(libs)
+	@echo "lib_pat  " $(lib_pat)
+	@echo "libs_filt" $(libs_filt)
+
 	
-obj/%.o: $(src)%.cpp
+obj/%.o: $(src)%.cpp $(libs_filt)
 	@$(ECHO) compiling $<...
 	@$(MKDIR) $(dir $@)
 	@$(CXX) $(cflags) -c $< -o $@ $(lflags)	
