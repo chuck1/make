@@ -9,12 +9,20 @@ inc  := $(home)inc/
 bin  := $(home)bin/
 obj  := obj/
 
-name      := $(patsubst %/compiler/lin64, %.a , $(subst ./, , $(subst ../, , $(shell pwd))))
-name      := $(basename $(notdir $(name)))
 
-libs      := $(shell find $(lpaths) -name *.a)
-lib_pat   := $(addsuffix .a, $(addprefix %lib, $(libraries)))
-libs_filt := $(filter $(lib_pat), $(libs))
+
+name       := $(patsubst %/compiler/lin64, %.a , $(subst ./, , $(subst ../, , $(shell pwd))))
+name       := $(basename $(notdir $(name)))
+
+
+
+libs       := $(shell find $(lpaths) -name *.a)
+lib_pat    := $(addsuffix .a, $(addprefix %lib, $(libraries)))
+libs_filt  := $(filter $(lib_pat), $(libs))
+
+
+
+hpaths     += $(inc)
 
 
 
@@ -61,6 +69,8 @@ debug:
 	@echo "libs     " $(libs)
 	@echo "lib_pat  " $(lib_pat)
 	@echo "libs_filt" $(libs_filt)
+	@echo "hpaths"
+	@echo $(hpaths)
 
 
 
