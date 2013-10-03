@@ -17,6 +17,8 @@ lib_pat   := $(addsuffix .a, $(addprefix %lib, $(libraries)))
 libs_filt := $(filter $(lib_pat), $(libs))
 
 
+hpaths     += $(inc)
+
 
 cflags     := 
 cflags     += -g -std=c++0x -Wall -Wno-unknown-pragmas -rdynamic -pthread
