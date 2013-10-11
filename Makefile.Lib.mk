@@ -34,10 +34,11 @@ libs_filt := $(filter $(lib_pat), $(libs))
 
 all_cppfiles := $(shell find $(src) -name *.cpp)
 
+count_cppfiles := $(shell find $(src) -name *.cpp | wc -l)
+
 ign_paths :=
 ign_paths += $(shell find $(src) -name win)
 ign_paths += $(shell find $(src) -name old)
-
 
 ign_files := $(foreach ign_path,$(ign_paths), $(filter $(ign_path)%, $(all_cppfiles)))
 
@@ -56,7 +57,7 @@ bin       := $(lib)lin64/lib$(name).a
 
 all:
 	@clear
-	@$(MAKE) -f Makefile $(bin)
+	@time $(MAKE) -f Makefile $(bin)
 
 
 debug:
@@ -69,7 +70,7 @@ debug:
 
 	
 obj/%.o: $(src)%.cpp $(libs_filt)
-	@$(ECHO) compiling $<...
+	@$(ECHO) compiling  of $(count_cppfiles) $<...
 	@$(MKDIR) $(dir $@)
 	@$(CXX) $(cflags) -c $< -o $@ $(lflags)	
 

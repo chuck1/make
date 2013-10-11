@@ -84,12 +84,12 @@ clean:
 	
 fresh: clean all
 	
-$(obj)%.o: $(src)%.cpp $(libs_filt)
+$(obj)%.o: $(src)%.cpp 	
 	@$(ECHO) compiling $<...
 	@$(MKDIR) $(dir $@)
 	@$(CXX) $(cflags) -c $< -o $@ $(lflags)
 
-$(binary): $(o_files) 
+$(binary): $(o_files) $(libs_filt)
 	@$(ECHO) building $@...
 	@$(MKDIR) $(dir $(binary))
 	@$(CXX) $(cflags) -o $@ $(o_files) $(lflags)
