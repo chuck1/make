@@ -69,7 +69,7 @@ debug:
 
 
 	
-$(folder_obj)%.o: $(src)%.cpp $(libs_filt)
+$(folder_obj)%.o: $(src)%.cpp
 	@$(ECHO) compiling  of $(count_cppfiles) $<...
 	@$(MKDIR) $(dir $@)
 	@$(CXX) $(cflags) -c $< -o $@ $(lflags)	
