@@ -1,9 +1,10 @@
+-include $(root)make/Makefile.Def.mk
+-include $(root)make/Makefile.Folders.mk
 
-
-os := lin64
 
 
 hpaths    += $(inc)
+
 
 
 cflags    := 
@@ -12,16 +13,11 @@ cflags    += $(addprefix -D, $(defines))
 cflags    += $(addprefix -I, $(hpaths))
 
 
-lflags    += $(addprefix -L, $(lpaths))
-lflags    += -Wl,--start-group $(addprefix -l, $(libraries)) -Wl,--end-group
-
-
 pre = -Wl,-rpath,
 
-lflags += $(addprefix $(pre), $(lpaths))
-
-
-
+lflags    += $(addprefix -L, $(lpaths))
+lflags    += -Wl,--start-group $(addprefix -l, $(libraries)) -Wl,--end-group
+lflags    += $(addprefix $(pre), $(lpaths))
 
 
 
@@ -30,27 +26,31 @@ lib_pat   := $(addsuffix .a, $(addprefix %lib, $(libraries)))
 libs_filt := $(filter $(lib_pat), $(libs))
 
 
+
 all_cppfiles := $(shell find $(src) -name *.cpp)
 
+
+
 count_cppfiles := $(shell find $(src) -name *.cpp | wc -l)
+
+
 
 ign_paths :=
 ign_paths += $(shell find $(src) -name win)
 ign_paths += $(shell find $(src) -name old)
 
+
+
 ign_files := $(foreach ign_path,$(ign_paths), $(filter $(ign_path)%, $(all_cppfiles)))
+
 
 
 cppfiles  := $(filter-out $(ign_files), $(all_cppfiles))
 
 
+
 files_obj       = $(subst $(src), $(folder_obj),     $(patsubst %.cpp, %.o     , $(cppfiles)))
 files_depend    = $(subst $(src), $(folder_depend),  $(patsubst %.cpp, %.depend, $(cppfiles)))
-
-
-
-
-
 
 all:
 	@clear
@@ -58,9 +58,10 @@ all:
 
 
 debug:
+	@echo "name      " $(name)
 	@echo "fldr src  " $(src)
 	@echo "cpp files " $(cppfiles)
-	@echo "depend    " $(depend)
+	@echo "depend    " $(files_depend)
 	@echo "libraries " $(libraries)
 	@echo "lpaths    " $(lpaths)
 	@echo "libs      " $(libs)
@@ -87,6 +88,19 @@ clean:
 	@$(RMDIR) $(folder_obj)
 	@$(RMDIR) $(folder_depend)
 	@$(RMDIR) $(file_goal)
+
+
+$(file_goal): $(files_obj) $(libs_filt)
+	@$(ECHO) building $@...
+	@$(MKDIR) $(dir $@)
+ifeq ($(mode),lib)
+	@$(AR) rcs $@ $(files_obj)
+else
+	@$(CXX) $(cflags) -o $@ $(files_obj) $(lflags)
+endif
+	@$(ECHO) building $@ complete!
+
+
 
 fresh: clean all
 
